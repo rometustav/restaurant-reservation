@@ -6,6 +6,7 @@ import com.romet.restaurantreservation.repository.ReservationRepository;
 import com.romet.restaurantreservation.repository.RestaurantTableRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -13,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+@Configuration
 public class DataInitializer {
 
     @Bean
