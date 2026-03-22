@@ -8,8 +8,8 @@
   --gold-dark: #a08040;
   --bg-dark: #1a1a1f;
   --bg-card: #242429;
-  --text-primary: #f0ece4;
-  --text-secondary: #c2baab;
+  --text-primary: #e9e1d0;
+  --text-secondary: #bbae96;
 }
 
 body {
@@ -298,5 +298,17 @@ select:focus { outline: none; border-color: var(--gold); }
 }
 
 .booking-summary strong {
+  color: var(--text-primary);
+}
+
+.calendar-btn {
+  background: transparent;
+  border: 1px solid rgba(200, 169, 110, 0.3);
+  color: var(--text-secondary);
+  width: 100%;
+}
+
+.calendar-btn:hover {
+  border-color: var(--gold);
   color: var(--text-primary);
 }

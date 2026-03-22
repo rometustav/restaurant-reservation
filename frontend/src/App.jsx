@@ -18,8 +18,8 @@ function StepIndicator({ currentStep }) {
 function App() {
   const [step, setStep] = useState(1)
   const [name, setName] = useState('')
-  const [date, setDate] = useState('')
-  const [startTime, setStartTime] = useState('')
+  const [date, setDate] = useState(new Date().toISOString().split('T')[0])
+  const [startTime, setStartTime] = useState('10:00')
   const [length, setLength] = useState(1)
   const [partySize, setPartySize] = useState(2)
   const [zone, setZone] = useState(null)
@@ -124,6 +124,31 @@ function App() {
   function formatDate(dateStr) {
     const [year, month, day] = dateStr.split('-')
     return `${day}/${month}/${year}`
+  }
+
+  function downloadCalendarEvent() {
+    const endTime = getEndTime()
+    const startDateTime = `${date.replaceAll('-', '')}T${startTime.replace(':', '')}00`
+    const endDateTime = `${date.replaceAll('-', '')}T${endTime.replace(':', '')}00`
+    const tableText = selectedRec.tables.map(t => `#${t.id}`).join(' + ')
+
+    const ics = `BEGIN:VCALENDAR
+    VERSION:2.0
+    BEGIN:VEVENT
+    DTSTART:${startDateTime}
+    DTEND:${endDateTime}
+    SUMMARY:Restorani broneering - Laud ${tableText}
+    DESCRIPTION:Nimi: ${name}\\nInimeste arv: ${partySize}\\nLaud: ${tableText}
+    END:VEVENT
+    END:VCALENDAR`
+
+    const blob = new Blob([ics], { type: 'text/calendar' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = 'broneering.ics'
+    a.click()
+    URL.revokeObjectURL(url)
   }
 
   return (
@@ -288,7 +313,7 @@ function App() {
 
       {step === 5 && (
         <div className="step-container">
-          <h2>Broneering kinnitatud!</h2>
+          <h2>Teie broneering on kinnitatud</h2>
           <p>Aitäh {name}, et valisid meie restorani.</p>
           <br></br>
           <p>Broneeringu andmed:</p>
@@ -298,7 +323,8 @@ function App() {
             <li><strong>Inimeste arv:</strong> {partySize}</li>
             <li><strong>Laud:</strong> {selectedRec && selectedRec.tables.map(t => `#${t.id}`).join(' + ')}</li>
           </ul>
-          <p>Ootame teid.</p>
+          <p>Ootame teid külla!</p>
+          <button className="calendar-btn" onClick={downloadCalendarEvent}>📅 Lisa kalendrisse</button>
           <button onClick={() => {
             setStep(1)
             setName('')
