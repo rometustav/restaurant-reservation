@@ -63,6 +63,13 @@ public class RecommendationService {
 
         // Sorteerime parima skoori järgi ning tagastame sorteeritud listi
         recommendations.sort((a, b) -> b.score() - a.score());
+
+        // Normaliseerime skoorid vahemikku 0-100
+        if (!recommendations.isEmpty()) {
+            int maxScore = recommendations.getFirst().score();
+            recommendations = recommendations.stream().map(r -> new Recommendation(r.tables(), (r.score()  * 100 / maxScore))).toList();
+        }
+
         return recommendations;
     }
 
@@ -108,7 +115,7 @@ public class RecommendationService {
         if (cornerSeat && !table.isCornerTable()) score -= 15;
         if (kidsAreaSeat && !table.isKidsAreaTable()) score -= 18;
 
-        return score;
+        return Math.max(0, score);
     }
 
     /**
@@ -147,6 +154,7 @@ public class RecommendationService {
                 if (kidsAreaSeat && (t1.isKidsAreaTable() || t2.isKidsAreaTable())) combinedScore += 30;
                 if (kidsAreaSeat && !t1.isKidsAreaTable() && !t2.isKidsAreaTable()) combinedScore -= 18;
 
+                combinedScore = Math.max(0, combinedScore);
                 merged.add(new Recommendation(List.of(t1, t2), combinedScore));
             }
         }
