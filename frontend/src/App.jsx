@@ -92,6 +92,40 @@ function App() {
     return !recommendations.some(r => r.tables.some(t => t.id === tableId))
   }
 
+  // Loob andmebaasi uue broneeringu
+  async function createReservation() {
+    const endTime = getEndTime()
+    const tableId = selectedRec.tables[0].id
+
+    const reservation = {
+      name: name,
+      date: date,
+      startTime: startTime + ':00',
+      endTime: endTime + ':00',
+      partySize: partySize,
+      table: { id: tableId }
+    }
+
+    try {
+      const response = await fetch('http://localhost:8080/api/reservations', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(reservation)
+      })
+
+      if (response.ok) {
+        setStep(5)
+      }
+    } catch (error) {
+      console.error('Viga broneeringu loomisel:', error)
+    }
+  }
+
+  function formatDate(dateStr) {
+    const [year, month, day] = dateStr.split('-')
+    return `${day}/${month}/${year}`
+  }
+
   return (
     <div className="app">
       <div className="animated-bg" />
@@ -247,8 +281,39 @@ function App() {
 
           <div className="nav-buttons" style={{ maxWidth: '480px' }}>
             <button onClick={() => setStep(3)}>← Tagasi</button>
-            <button>Broneeri</button>
+            <button onClick={createReservation} disabled={!selectedRec}>Broneeri</button>
           </div>
+        </div>
+      )}
+
+      {step === 5 && (
+        <div className="step-container">
+          <h2>Broneering kinnitatud!</h2>
+          <p>Aitäh {name}, et valisid meie restorani.</p>
+          <br></br>
+          <p>Broneeringu andmed:</p>
+          <ul className="booking-summary">
+            <li><strong>Kuupäev:</strong> {formatDate(date)}</li>
+            <li><strong>Kellaaeg:</strong> {startTime} - {getEndTime()}</li>
+            <li><strong>Inimeste arv:</strong> {partySize}</li>
+            <li><strong>Laud:</strong> {selectedRec && selectedRec.tables.map(t => `#${t.id}`).join(' + ')}</li>
+          </ul>
+          <p>Ootame teid.</p>
+          <button onClick={() => {
+            setStep(1)
+            setName('')
+            setDate('')
+            setStartTime('')
+            setLength(1)
+            setPartySize(2)
+            setZone(null)
+            setPreferences({ windowSeat: false, cornerSeat: false, kidsAreaSeat: false })
+            setSelectedRec(null)
+            setRecommendations([])
+            setShowAllRecs(false)
+          }}>
+            Uus broneering
+          </button>
         </div>
       )}
     </div>
