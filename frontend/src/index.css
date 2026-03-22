@@ -205,7 +205,7 @@ select:focus { outline: none; border-color: var(--gold); }
 
 .grid-container {
   position: relative;
-  height: 700px;
+  height: 600px;
 }
 
 .table-block {
