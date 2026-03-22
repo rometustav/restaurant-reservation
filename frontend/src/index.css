@@ -312,3 +312,12 @@ select:focus { outline: none; border-color: var(--gold); }
   border-color: var(--gold);
   color: var(--text-primary);
 }
+
+.zone-divider {
+  position: absolute;
+  left: 20px;
+  right: 20px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold-dark), transparent);
+  opacity: 0.4;
+}

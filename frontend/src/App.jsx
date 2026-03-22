@@ -255,6 +255,9 @@ function App() {
               <div className="floor-plan">
                 <h2>Restorani plaan</h2>
                 <div className="grid-container">
+                  <div className="zone-divider" style={{ top: `${7 * 40}px` }} />
+                  <div className="zone-divider" style={{ top: `${11 * 40}px` }} />
+
                   {allTables.map(table => (
                     <div
                       key={table.id}
@@ -331,8 +334,8 @@ function App() {
           <button onClick={() => {
             setStep(1)
             setName('')
-            setDate('')
-            setStartTime('')
+            setDate(new Date().toISOString().split('T')[0])
+            setStartTime('10:00')
             setLength(1)
             setPartySize(2)
             setZone(null)
