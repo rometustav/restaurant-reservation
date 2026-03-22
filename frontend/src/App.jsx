@@ -20,7 +20,7 @@ function App() {
   const [name, setName] = useState('')
   const [date, setDate] = useState('')
   const [startTime, setStartTime] = useState('')
-  const [length, setLength] = useState('1')
+  const [length, setLength] = useState(1)
   const [partySize, setPartySize] = useState(2)
   const [zone, setZone] = useState(null)
   const [preferences, setPreferences] = useState({
@@ -29,10 +29,73 @@ function App() {
     kidsAreaSeat: false
   })
 
+  const [recommendations, setRecommendations] = useState([])
+  const [allTables, setAllTables] = useState([])
+  const [selectedRec, setSelectedRec] = useState(null)
+  const [loading, setLoading] = useState(false)
+
+  const zoneNames = {
+    INDOOR: 'Sisesaal',
+    TERRACE: 'Terrass',
+    PRIVATE: 'Privaatruum'
+  }
+
+  const [showAllRecs, setShowAllRecs] = useState(false)
+
+  // Arvutab endTime
+  function getEndTime() {
+    const hour = parseInt(startTime.split(':')[0]) + length
+    return `${String(hour).padStart(2, '0')}:00`
+  }
+
+  // Pärib backendist soovitused ja lauad
+  async function fetchRecommendations() {
+    setLoading(true)
+    try {
+      const endTime = getEndTime()
+      const params = new URLSearchParams({
+        date,
+        startTime: startTime + ':00',
+        endTime: endTime + ':00',
+        partySize,
+        windowSeat: preferences.windowSeat,
+        cornerSeat: preferences.cornerSeat,
+        kidsAreaSeat: preferences.kidsAreaSeat
+      })
+      if (zone) params.append('zone', zone)
+
+      const [recRes, tablesRes] = await Promise.all([
+        fetch(`http://localhost:8080/api/recommendations?${params}`),
+        fetch('http://localhost:8080/api/tables')
+      ])
+
+      const recs = await recRes.json()
+      const tables = await tablesRes.json()
+
+      setRecommendations(recs)
+      setAllTables(tables)
+      if (recs.length > 0) setSelectedRec(recs[0])
+    } catch (error) {
+      console.error('Viga andmete laadimisel:', error)
+    }
+    setLoading(false)
+  }
+
+  // Kontrollib kas laud on valitud soovituses
+  function isHighlighted(tableId) {
+    if (!selectedRec) return false
+    return selectedRec.tables.some(t => t.id === tableId)
+  }
+
+  // Kontrollib kas laud on hõivatud (pole üheski soovituses)
+  function isOccupied(tableId) {
+    return !recommendations.some(r => r.tables.some(t => t.id === tableId))
+  }
+
   return (
     <div className="app">
       <div className="animated-bg" />
-      
+
       {step === 1 && (
         <div className="step-container">
         <StepIndicator currentStep={1} />
@@ -69,7 +132,7 @@ function App() {
           <label>Inimeste arv</label>
           <input type="number" min="1" max="20" value={partySize} onChange={e => setPartySize(Number(e.target.value))} />
 
-          <button onClick={() => setStep(2)} disabled={!name || !date || !startTime}>
+          <button onClick={() => setStep(2)} disabled={!name || !date || !startTime || date < new Date().toISOString().split('T')[0]}>
             Edasi →
           </button>
         </div>
@@ -95,7 +158,7 @@ function App() {
       {step === 3 && (
         <div className="step-container">
           <StepIndicator currentStep={3} />
-          <h2>Vali veel laua eelistusi, kui soovid</h2>
+          <h2>Saad valida veel laua eelistusi, kui soovid</h2>
           <label className="checkbox-label">
             <input type="checkbox" checked={preferences.windowSeat} onChange={e => setPreferences({...preferences, windowSeat: e.target.checked})} />
             Akna ääres
@@ -110,7 +173,7 @@ function App() {
           </label>
           <div className="nav-buttons">
             <button onClick={() => setStep(2)}>← Tagasi</button>
-            <button onClick={() => setStep(4)}>Otsi laudu →</button>
+            <button onClick={() => { fetchRecommendations(); setStep(4) }}>Otsi laudu →</button>
           </div>
         </div>
       )}
@@ -118,8 +181,74 @@ function App() {
       {step === 4 && (
         <div className="results-container">
           <StepIndicator currentStep={4} />
-          <h2>Soovitused</h2>
-          <button onClick={() => setStep(3)}>← Tagasi</button>
+          {loading && <p className="loading">Otsin parimaid laudu...</p>}
+
+          {!loading && recommendations.length === 0 && (
+            <div className="no-results">
+              <h2>Kahjuks ei leidnud sobivaid laudu</h2>
+              <p>Proovi teist kuupäeva või kellaaega</p>
+            </div>
+          )}
+
+          {!loading && recommendations.length > 0 && (
+            <>
+              {/* Restorani plaan */}
+              <div className="floor-plan">
+                <h2>Restorani plaan</h2>
+                <div className="grid-container">
+                  {allTables.map(table => (
+                    <div
+                      key={table.id}
+                      className={`table-block ${isHighlighted(table.id) ? 'highlighted' : ''} ${isOccupied(table.id) ? 'occupied' : 'free'}`}
+                      style={{
+                        left: `${table.x * 40}px`,
+                        top: `${table.y * 40}px`,
+                        width: `${table.width * 40}px`,
+                        height: `${table.height * 40}px`
+                      }}
+                    >
+                      <span className="table-label">Laud #{table.id}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Soovituste list */}
+              <div className="recommendations-list">
+                <h2>Soovitused</h2>
+                {(showAllRecs ? recommendations : recommendations.slice(0, 3)).map((rec, i) => (
+                  <div
+                    key={i}
+                    className={`rec-card ${selectedRec === rec ? 'selected' : ''}`}
+                    onClick={() => setSelectedRec(rec)}
+                  >
+                    <div className="rec-info">
+                      <span className="rec-tables">
+                        {rec.tables.length > 1 ? 'Lauad' : 'Laud'} {rec.tables.map(t => `#${t.id}`).join(' + ')}
+                      </span>
+                      <span className="rec-details">
+                        {rec.tables.reduce((sum, t) => sum + t.capacity, 0)} kohta · {zoneNames[rec.tables[0].zone]}
+                      </span>
+                    </div>
+                    <div className="rec-score-bar">
+                      <div className="rec-score-fill" style={{ width: `${rec.score}%` }} />
+                    </div>
+                    <span className="rec-score-text">{rec.score}%</span>
+                  </div>
+                ))}
+                {!showAllRecs && recommendations.length > 3 && (
+                  <button className="show-more-btn" onClick={() => setShowAllRecs(true)}>
+                    Näita rohkem ({recommendations.length - 3})
+                  </button>
+                )}
+              </div>
+            </>
+          )}
+
+          <div className="nav-buttons" style={{ maxWidth: '480px' }}>
+            <button onClick={() => setStep(3)}>← Tagasi</button>
+            <button>Broneeri</button>
+          </div>
         </div>
       )}
     </div>

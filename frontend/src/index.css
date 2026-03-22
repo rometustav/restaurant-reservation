@@ -15,7 +15,6 @@
 body {
   font-family: 'Source Sans 3', sans-serif;
   background: var(--bg-dark);
-  overflow: hidden;
   color: var(--text-primary);
   min-height: 100vh;
 }
@@ -181,3 +180,105 @@ select:focus { outline: none; border-color: var(--gold); }
 .step-dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(200, 169, 110, 0.2); transition: all 0.3s; }
 .step-dot.active { background: var(--gold); box-shadow: 0 0 8px rgba(200, 169, 110, 0.4); }
 .step-dot.done { background: var(--gold-dark); }
+
+.results-container {
+  z-index: 1;
+  width: 100%;
+  max-width: 1100px;
+  animation: fadeIn 0.4s ease-out;
+  padding-bottom: 4rem;
+}
+
+.loading { color: var(--gold-light); text-align: center; font-size: 1.2rem; }
+
+.no-results { text-align: center; padding: 3rem; }
+.no-results p { color: var(--text-secondary); margin-top: 0.5rem; }
+
+/* Restorani plaan */
+.floor-plan {
+  background: var(--bg-card);
+  border: 1px solid rgba(200, 169, 110, 0.15);
+  border-radius: 12px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+}
+
+.grid-container {
+  position: relative;
+  height: 700px;
+}
+
+.table-block {
+  position: absolute;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s;
+  border: 2px solid transparent;
+}
+
+.table-block.free { background: rgba(200, 169, 110, 0.15); }
+.table-block.occupied { background: rgba(255, 255, 255, 0.05); opacity: 0.4; }
+.table-block.highlighted {
+  background: rgba(110, 207, 142, 0.25);
+  border-color: #6ecf8e;
+  box-shadow: 0 0 15px rgba(110, 207, 142, 0.3);
+}
+
+.table-label { font-size: 0.75rem; color: var(--text-secondary); }
+.table-block.highlighted .table-label { color: #6ecf8e; font-weight: 600; }
+
+/* Soovituste list */
+.recommendations-list {
+  background: var(--bg-card);
+  border: 1px solid rgba(200, 169, 110, 0.15);
+  border-radius: 12px;
+  padding: 2rem;
+}
+
+.rec-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background: var(--bg-dark);
+  border: 1px solid rgba(200, 169, 110, 0.1);
+  border-radius: 8px;
+  margin-top: 0.7rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.rec-card:hover { border-color: var(--gold); }
+.rec-card.selected {
+  border-color: #6ecf8e;
+  background: rgba(110, 207, 142, 0.05);
+}
+
+.rec-info { flex: 1; }
+.rec-tables { display: block; font-weight: 500; color: var(--text-primary); }
+.rec-details { font-size: 0.85rem; color: var(--text-secondary); }
+
+.rec-score-bar {
+  width: 100px;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.rec-score-fill {
+  height: 100%;
+  border-radius: 3px;
+  background: linear-gradient(90deg, #cf6e6e, #c8a96e, #6ecf8e);
+  transition: width 0.5s ease;
+}
+
+.rec-score-text {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--gold-light);
+  min-width: 40px;
+  text-align: right;
+}
