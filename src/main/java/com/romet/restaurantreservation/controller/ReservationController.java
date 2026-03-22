@@ -20,4 +20,9 @@ public class ReservationController {
     public List<Reservation> getAllReservations() {
         return reservationRepository.findAll();
     }
+
+    @PostMapping
+    public Reservation createReservation(@RequestBody Reservation reservation) {
+        return reservationRepository.save(reservation);
+    }
 }
