@@ -287,6 +287,9 @@ function App() {
                       </span>
                       <span className="rec-details">
                         {rec.tables.reduce((sum, t) => sum + t.capacity, 0)} kohta · {zoneNames[rec.tables[0].zone]}
+                        {rec.tables.some(t => t.windowTable) && ' · Akna ääres'}
+                        {rec.tables.some(t => t.cornerTable) && ' · Vaikne nurk'}
+                        {rec.tables.some(t => t.kidsAreaTable) && ' · Laste mängunurga lähedal'}
                       </span>
                     </div>
                     <div className="rec-score-bar">
