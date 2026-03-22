@@ -22,9 +22,9 @@ public class RestaurantTable {
     private int x;
     private int y;
 
-    private boolean cornerSeat;
-    private boolean windowSeat;
-    private boolean kidsAreaSeat;
+    private boolean cornerTable;
+    private boolean windowTable;
+    private boolean kidsAreaTable;
 
     public RestaurantTable() {}
 
@@ -89,27 +89,27 @@ public class RestaurantTable {
         this.y = y;
     }
 
-    public boolean isCornerSeat() {
-        return cornerSeat;
+    public boolean isCornerTable() {
+        return cornerTable;
     }
 
-    public void setCornerSeat(boolean cornerSeat) {
-        this.cornerSeat = cornerSeat;
+    public void setCornerTable(boolean cornerSeat) {
+        this.cornerTable = cornerSeat;
     }
 
-    public boolean isWindowSeat() {
-        return windowSeat;
+    public boolean isWindowTable() {
+        return windowTable;
     }
 
-    public void setWindowSeat(boolean windowSeat) {
-        this.windowSeat = windowSeat;
+    public void setWindowTable(boolean windowSeat) {
+        this.windowTable = windowSeat;
     }
 
-    public boolean isKidsAreaSeat() {
-        return kidsAreaSeat;
+    public boolean isKidsAreaTable() {
+        return kidsAreaTable;
     }
 
-    public void setKidsAreaSeat(boolean kidsAreaSeat) {
-        this.kidsAreaSeat = kidsAreaSeat;
+    public void setKidsAreaTable(boolean kidsAreaSeat) {
+        this.kidsAreaTable = kidsAreaSeat;
     }
 }

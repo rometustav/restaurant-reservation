@@ -8,7 +8,7 @@
         <version>4.0.4</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
-    <groupId>ee.rometcgi</groupId>
+    <groupId>com.romet</groupId>
     <artifactId>restaurant-reservation</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>restaurant-reservation</name>
@@ -50,12 +50,7 @@
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-jpa-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-webmvc-test</artifactId>
+            <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>

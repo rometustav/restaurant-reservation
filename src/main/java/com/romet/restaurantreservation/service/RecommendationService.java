@@ -100,13 +100,13 @@ public class RecommendationService {
         int emptySeats = table.getCapacity() - partySize;
         score -= emptySeats * 15;
 
-        if (windowSeat && table.isWindowSeat()) score += 25;
-        if (cornerSeat && table.isCornerSeat()) score += 25;
-        if (kidsAreaSeat && table.isKidsAreaSeat()) score += 30;
+        if (windowSeat && table.isWindowTable()) score += 25;
+        if (cornerSeat && table.isCornerTable()) score += 25;
+        if (kidsAreaSeat && table.isKidsAreaTable()) score += 30;
 
-        if (windowSeat && !table.isWindowSeat()) score -= 15;
-        if (cornerSeat && !table.isCornerSeat()) score -= 15;
-        if (kidsAreaSeat && !table.isKidsAreaSeat()) score -= 18;
+        if (windowSeat && !table.isWindowTable()) score -= 15;
+        if (cornerSeat && !table.isCornerTable()) score -= 15;
+        if (kidsAreaSeat && !table.isKidsAreaTable()) score -= 18;
 
         return score;
     }
@@ -140,12 +140,12 @@ public class RecommendationService {
                 if (zone != null && t1.getZone() != zone) combinedScore -= 20;
 
                 // Eelistused - piisab kui vähemalt ühel laual on
-                if (windowSeat && (t1.isWindowSeat() || t2.isWindowSeat())) combinedScore += 25;
-                if (windowSeat && !t1.isWindowSeat() && !t2.isWindowSeat()) combinedScore -= 15;
-                if (cornerSeat && (t1.isCornerSeat() || t2.isCornerSeat())) combinedScore += 25;
-                if (cornerSeat && !t1.isCornerSeat() && !t2.isCornerSeat()) combinedScore -= 15;
-                if (kidsAreaSeat && (t1.isKidsAreaSeat() || t2.isKidsAreaSeat())) combinedScore += 30;
-                if (kidsAreaSeat && !t1.isKidsAreaSeat() && !t2.isKidsAreaSeat()) combinedScore -= 18;
+                if (windowSeat && (t1.isWindowTable() || t2.isWindowTable())) combinedScore += 25;
+                if (windowSeat && !t1.isWindowTable() && !t2.isWindowTable()) combinedScore -= 15;
+                if (cornerSeat && (t1.isCornerTable() || t2.isCornerTable())) combinedScore += 25;
+                if (cornerSeat && !t1.isCornerTable() && !t2.isCornerTable()) combinedScore -= 15;
+                if (kidsAreaSeat && (t1.isKidsAreaTable() || t2.isKidsAreaTable())) combinedScore += 30;
+                if (kidsAreaSeat && !t1.isKidsAreaTable() && !t2.isKidsAreaTable()) combinedScore -= 18;
 
                 merged.add(new Recommendation(List.of(t1, t2), combinedScore));
             }
