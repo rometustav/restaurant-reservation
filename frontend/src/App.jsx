@@ -1,19 +1,8 @@
 import { useState } from 'react'
+import StepIndicator from './components/StepIndicator'
+import FloorPlan from './components/FloorPlan'
+import RecommendationList from './components/RecommendationList'
 import './index.css'
-
-// Funktsioon sammude rea joonistamiseks
-function StepIndicator({ currentStep }) {
-  return (
-    <div className="step-indicator">
-      {[1, 2, 3, 4].map(s => (
-        <div
-          key={s}
-          className={`step-dot ${s === currentStep ? 'active' : ''} ${s < currentStep ? 'done' : ''}`}
-        />
-      ))}
-    </div>
-  )
-}
 
 function App() {
   const [step, setStep] = useState(1)
@@ -132,15 +121,17 @@ function App() {
     const endDateTime = `${date.replaceAll('-', '')}T${endTime.replace(':', '')}00`
     const tableText = selectedRec.tables.map(t => `#${t.id}`).join(' + ')
 
-    const ics = `BEGIN:VCALENDAR
-    VERSION:2.0
-    BEGIN:VEVENT
-    DTSTART:${startDateTime}
-    DTEND:${endDateTime}
-    SUMMARY:Restorani broneering - Laud ${tableText}
-    DESCRIPTION:Nimi: ${name}\\nInimeste arv: ${partySize}\\nLaud: ${tableText}
-    END:VEVENT
-    END:VCALENDAR`
+    const ics = [
+    'BEGIN:VCALENDAR',
+    'VERSION:2.0',
+    'BEGIN:VEVENT',
+    `DTSTART:${startDateTime}`,
+    `DTEND:${endDateTime}`,
+    `SUMMARY:Restorani broneering - Laud ${tableText}`,
+    `DESCRIPTION:Nimi: ${name}\\nInimeste arv: ${partySize}\\nLaud: ${tableText}`,
+    'END:VEVENT',
+    'END:VCALENDAR'
+    ].join('\r\n')
 
     const blob = new Blob([ics], { type: 'text/calendar' })
     const url = URL.createObjectURL(blob)
@@ -252,61 +243,10 @@ function App() {
           {!loading && recommendations.length > 0 && (
             <>
               {/* Restorani plaan */}
-              <div className="floor-plan">
-                <h2>Restorani plaan</h2>
-                <div className="grid-container">
-                  <div className="zone-divider" style={{ top: `${7 * 40}px` }} />
-                  <div className="zone-divider" style={{ top: `${11 * 40}px` }} />
-
-                  {allTables.map(table => (
-                    <div
-                      key={table.id}
-                      className={`table-block ${isHighlighted(table.id) ? 'highlighted' : ''} ${isOccupied(table.id) ? 'occupied' : 'free'}`}
-                      style={{
-                        left: `${table.x * 40}px`,
-                        top: `${table.y * 40}px`,
-                        width: `${table.width * 40}px`,
-                        height: `${table.height * 40}px`
-                      }}
-                    >
-                      <span className="table-label">Laud #{table.id}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
+              <FloorPlan allTables={allTables} isHighlighted={isHighlighted} isOccupied={isOccupied} />
 
               {/* Soovituste list */}
-              <div className="recommendations-list">
-                <h2>Soovitused</h2>
-                {(showAllRecs ? recommendations : recommendations.slice(0, 3)).map((rec, i) => (
-                  <div
-                    key={i}
-                    className={`rec-card ${selectedRec === rec ? 'selected' : ''}`}
-                    onClick={() => setSelectedRec(rec)}
-                  >
-                    <div className="rec-info">
-                      <span className="rec-tables">
-                        {rec.tables.length > 1 ? 'Lauad' : 'Laud'} {rec.tables.map(t => `#${t.id}`).join(' + ')}
-                      </span>
-                      <span className="rec-details">
-                        {rec.tables.reduce((sum, t) => sum + t.capacity, 0)} kohta · {zoneNames[rec.tables[0].zone]}
-                        {rec.tables.some(t => t.windowTable) && ' · Akna ääres'}
-                        {rec.tables.some(t => t.cornerTable) && ' · Vaikne nurk'}
-                        {rec.tables.some(t => t.kidsAreaTable) && ' · Laste mängunurga lähedal'}
-                      </span>
-                    </div>
-                    <div className="rec-score-bar">
-                      <div className="rec-score-fill" style={{ width: `${rec.score}%` }} />
-                    </div>
-                    <span className="rec-score-text">{rec.score}%</span>
-                  </div>
-                ))}
-                {!showAllRecs && recommendations.length > 3 && (
-                  <button className="show-more-btn" onClick={() => setShowAllRecs(true)}>
-                    Näita rohkem ({recommendations.length - 3})
-                  </button>
-                )}
-              </div>
+              <RecommendationList recommendations={recommendations} selectedRec={selectedRec} setSelectedRec={setSelectedRec} showAllRecs={showAllRecs} setShowAllRecs={setShowAllRecs} />
             </>
           )}
 
