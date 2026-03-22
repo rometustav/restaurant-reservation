@@ -28,6 +28,27 @@ public class RestaurantTable {
 
     public RestaurantTable() {}
 
+    /**
+     Laudade paigutuse jaoks abifunktsioonid. Olenevalt laua
+     mahutavusest, näevad lauad maatriksitena välja sellised:
+     Mahutavus 2 -> 2x1
+     Mahutavus 4 -> 2x2
+     Mahutavus 6 -> 3x2
+     Mahutavus 8 -> 4x2
+     */
+    public int getWidth() {
+        return switch (capacity) {
+            case 6 -> 3;
+            case 8 -> 4;
+            default -> 2;
+        };
+    }
+
+    public int getHeight() {
+        if (capacity == 2) return 1;
+        return 2;
+    }
+
     public Long getId() {
         return id;
     }
